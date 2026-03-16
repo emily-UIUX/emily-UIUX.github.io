@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { SearchBar } from './SearchBar'
 import { FilterTabs } from './FilterTabs'
-import { Bookmark, Rss } from 'lucide-react'
+import { Bookmark, Rss, Settings } from 'lucide-react'
 
 export function Header() {
   return (
@@ -24,6 +24,13 @@ export function Header() {
             >
               <Bookmark className="h-4 w-4" />
               <span className="hidden sm:inline">북마크</span>
+            </Link>
+            <Link
+              href="/settings"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md hover:bg-accent transition-colors"
+            >
+              <Settings className="h-4 w-4" />
+              <span className="hidden sm:inline">설정</span>
             </Link>
           </div>
         </div>
