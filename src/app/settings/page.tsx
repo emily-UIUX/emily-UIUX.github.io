@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useSettingsStore, SubscriptionItem } from '@/stores/settingsStore'
 import { Platform } from '@/types/common'
 import { PLATFORM_ORDER } from '@/lib/constants'
@@ -43,10 +43,11 @@ const platformTypeLabels: Record<Platform, { channel: string; keyword: string }>
 function PlatformSection({ platform }: { platform: Platform }) {
   const config = platformConfigs[platform]
   const typeLabels = platformTypeLabels[platform]
-  const subscriptions = useSettingsStore((s) => s.subscriptions.filter((sub) => sub.platform === platform))
+  const allSubscriptions = useSettingsStore((s) => s.subscriptions)
   const addSubscription = useSettingsStore((s) => s.addSubscription)
   const removeSubscription = useSettingsStore((s) => s.removeSubscription)
   const toggleSubscription = useSettingsStore((s) => s.toggleSubscription)
+  const subscriptions = useMemo(() => allSubscriptions.filter((sub) => sub.platform === platform), [allSubscriptions, platform])
 
   const [newValue, setNewValue] = useState('')
   const [newType, setNewType] = useState<'channel' | 'keyword'>('channel')
