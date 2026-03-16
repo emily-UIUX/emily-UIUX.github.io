@@ -16,11 +16,11 @@ export function ExhibitionDetail({ item }: { item: NaverExhibitionItem }) {
     <div className="max-w-3xl mx-auto">
       <div className="grid grid-cols-1 md:grid-cols-[300px_1fr] gap-6">
         {/* Poster */}
-        <div className="relative">
+        <div className="relative aspect-[2/3] overflow-hidden rounded-xl shadow-lg">
           <img
             src={item.posterUrl}
             alt={item.title}
-            className="w-full rounded-xl shadow-lg"
+            className="w-full h-full object-cover"
           />
         </div>
 

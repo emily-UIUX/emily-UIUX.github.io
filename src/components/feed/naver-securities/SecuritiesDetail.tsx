@@ -6,6 +6,64 @@ import { BookmarkButton } from '@/components/bookmarks/BookmarkButton'
 import { TrendingUp, TrendingDown, Minus, ExternalLink, Newspaper } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
+function MiniChart({ data, isPositive }: { data: number[]; isPositive: boolean }) {
+  if (data.length < 2) return null
+
+  const min = Math.min(...data)
+  const max = Math.max(...data)
+  const range = max - min || 1
+  const width = 100
+  const height = 100
+  const padding = 4
+
+  const points = data.map((val, i) => {
+    const x = padding + (i / (data.length - 1)) * (width - padding * 2)
+    const y = padding + (1 - (val - min) / range) * (height - padding * 2)
+    return `${x},${y}`
+  })
+
+  const polyline = points.join(' ')
+
+  // Area fill path
+  const firstX = padding
+  const lastX = padding + (width - padding * 2)
+  const areaPath = `M ${firstX},${height - padding} L ${points.map(p => p).join(' L ')} L ${lastX},${height - padding} Z`
+
+  const strokeColor = isPositive ? '#ef4444' : '#3b82f6'
+  const fillColor = isPositive ? 'rgba(239,68,68,0.1)' : 'rgba(59,130,246,0.1)'
+
+  // Opening price line (horizontal dashed)
+  const openY = padding + (1 - (data[0] - min) / range) * (height - padding * 2)
+
+  return (
+    <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-full" preserveAspectRatio="none">
+      {/* Area fill */}
+      <path d={areaPath} fill={fillColor} />
+      {/* Opening price reference line */}
+      <line
+        x1={padding} y1={openY} x2={width - padding} y2={openY}
+        stroke="#9ca3af" strokeWidth="0.5" strokeDasharray="2,2"
+      />
+      {/* Price line */}
+      <polyline
+        points={polyline}
+        fill="none"
+        stroke={strokeColor}
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {/* Current price dot */}
+      <circle
+        cx={parseFloat(points[points.length - 1].split(',')[0])}
+        cy={parseFloat(points[points.length - 1].split(',')[1])}
+        r="2"
+        fill={strokeColor}
+      />
+    </svg>
+  )
+}
+
 export function SecuritiesDetail({ item }: { item: NaverSecuritiesItem }) {
   const change = item.priceChangePercent ?? 0
   const isPositive = change > 0
@@ -64,10 +122,19 @@ export function SecuritiesDetail({ item }: { item: NaverSecuritiesItem }) {
             </div>
           </div>
 
-          {/* Mini chart placeholder */}
-          <div className="mt-4 h-24 bg-muted/50 rounded-lg flex items-center justify-center text-sm text-muted-foreground">
-            차트 영역
-          </div>
+          {/* Intraday chart */}
+          {item.chartData && item.chartData.length > 1 && (
+            <div className="mt-4 h-32 rounded-lg overflow-hidden bg-muted/30 p-2">
+              <MiniChart data={item.chartData} isPositive={isPositive} />
+            </div>
+          )}
+          {item.chartData && (
+            <div className="flex justify-between text-[10px] text-muted-foreground mt-1 px-1">
+              <span>09:00</span>
+              <span>12:00</span>
+              <span>15:30</span>
+            </div>
+          )}
         </div>
       )}
 
@@ -85,7 +152,13 @@ export function SecuritiesDetail({ item }: { item: NaverSecuritiesItem }) {
               const stockChange = stock.currentPrice - stock.openingPrice
               const stockChangePercent = (stockChange / stock.openingPrice) * 100
               return (
-                <div key={stock.ticker} className="flex items-center justify-between p-3 border rounded-lg">
+                <a
+                  key={stock.ticker}
+                  href={`https://finance.naver.com/item/main.naver?code=${stock.ticker}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/30 transition-colors"
+                >
                   <div>
                     <p className="text-sm font-medium">{stock.name}</p>
                     <p className="text-xs text-muted-foreground">{stock.ticker}</p>
@@ -100,7 +173,7 @@ export function SecuritiesDetail({ item }: { item: NaverSecuritiesItem }) {
                       {stockChange > 0 ? '+' : ''}{stockChangePercent.toFixed(2)}%
                     </p>
                   </div>
-                </div>
+                </a>
               )
             })}
           </div>

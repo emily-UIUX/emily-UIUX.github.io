@@ -70,6 +70,7 @@ export interface NaverSecuritiesItem extends BaseFeedItem {
   priceChangePercent?: number
   summary: string
   relatedStocks: { ticker: string; name: string; openingPrice: number; currentPrice: number }[]
+  chartData?: number[]
 }
 
 export type FeedItem =

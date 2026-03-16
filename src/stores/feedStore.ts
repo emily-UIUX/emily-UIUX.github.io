@@ -5,7 +5,7 @@ import { persist } from 'zustand/middleware'
 import { FeedItem } from '@/types/feed'
 
 // Bump this version whenever mock data structure changes to force a refresh
-export const FEED_DATA_VERSION = 2
+export const FEED_DATA_VERSION = 3
 
 interface FeedState {
   items: Record<string, FeedItem>

@@ -5,6 +5,9 @@ import { persist } from 'zustand/middleware'
 import { Platform } from '@/types/common'
 import { generateId } from '@/lib/utils'
 
+// Bump when default subscriptions structure changes
+const SETTINGS_VERSION = 2
+
 export interface SubscriptionItem {
   id: string
   platform: Platform
@@ -17,6 +20,7 @@ export interface SubscriptionItem {
 
 interface SettingsState {
   subscriptions: SubscriptionItem[]
+  settingsVersion: number
 
   addSubscription: (platform: Platform, type: 'channel' | 'keyword' | 'region' | 'artist', value: string, label?: string) => void
   removeSubscription: (id: string) => void
@@ -47,14 +51,19 @@ const DEFAULT_SUBSCRIPTIONS: Omit<SubscriptionItem, 'id' | 'createdAt'>[] = [
   { platform: Platform.INSTAGRAM, type: 'channel', value: 'cafe.hopping', label: 'cafe.hopping', enabled: true },
 ]
 
+function createDefaultSubscriptions(): SubscriptionItem[] {
+  return DEFAULT_SUBSCRIPTIONS.map((s) => ({
+    ...s,
+    id: generateId(),
+    createdAt: new Date().toISOString(),
+  }))
+}
+
 export const useSettingsStore = create<SettingsState>()(
   persist(
     (set, get) => ({
-      subscriptions: DEFAULT_SUBSCRIPTIONS.map((s) => ({
-        ...s,
-        id: generateId(),
-        createdAt: new Date().toISOString(),
-      })),
+      subscriptions: createDefaultSubscriptions(),
+      settingsVersion: SETTINGS_VERSION,
 
       addSubscription: (platform, type, value, label) => {
         const trimmed = value.trim()
@@ -108,6 +117,19 @@ export const useSettingsStore = create<SettingsState>()(
       hasAnySubscriptions: (platform) =>
         get().subscriptions.some((s) => s.platform === platform && s.enabled),
     }),
-    { name: 'feed-settings' }
+    {
+      name: 'feed-settings',
+      version: SETTINGS_VERSION,
+      migrate: (persisted: unknown, version: number) => {
+        if (version < SETTINGS_VERSION) {
+          // Reset to defaults when version changes
+          return {
+            subscriptions: createDefaultSubscriptions(),
+            settingsVersion: SETTINGS_VERSION,
+          }
+        }
+        return persisted as SettingsState
+      },
+    }
   )
 )
