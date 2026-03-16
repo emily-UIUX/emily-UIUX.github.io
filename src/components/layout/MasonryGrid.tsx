@@ -34,9 +34,8 @@ export function MasonryGrid() {
         return (
           <div key={platform} className="flex flex-col min-w-0">
             <div
-              className="flex items-center gap-2 px-3 py-2 rounded-t-lg font-semibold text-sm mb-2"
+              className="flex items-center gap-2 px-3 py-2 rounded-lg font-semibold text-sm mb-2 border"
               style={{
-                backgroundColor: config.bgColor,
                 color: config.color,
               }}
             >

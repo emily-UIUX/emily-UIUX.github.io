@@ -1,15 +1,12 @@
 'use client'
 
 import Link from 'next/link'
-import { SearchBar } from './SearchBar'
-import { FilterTabs } from './FilterTabs'
 import { Bookmark, Rss, Settings } from 'lucide-react'
 
 export function Header() {
   return (
     <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4">
-        {/* Top row: logo + nav links */}
         <div className="flex items-center justify-between h-14">
           <Link href="/" className="flex items-center gap-2 font-bold text-lg shrink-0">
             <Rss className="h-5 w-5 text-primary" />
@@ -32,12 +29,6 @@ export function Header() {
               <span className="hidden sm:inline">설정</span>
             </Link>
           </div>
-        </div>
-
-        {/* Bottom row: search + filter tabs */}
-        <div className="flex items-center gap-3 pb-3 overflow-x-auto">
-          <SearchBar />
-          <FilterTabs />
         </div>
       </div>
     </header>

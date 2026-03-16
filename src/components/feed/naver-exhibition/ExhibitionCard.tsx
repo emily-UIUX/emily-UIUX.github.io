@@ -20,7 +20,7 @@ export function ExhibitionCard({ item }: ExhibitionCardProps) {
     <Link href={`/detail?platform=naver-exhibition&id=${item.id}`} className="group block">
       <div className="rounded-lg overflow-hidden bg-card border hover:shadow-md transition-shadow">
         {/* Poster */}
-        <div className="relative aspect-[2/3] bg-muted">
+        <div className="relative aspect-[4/3] bg-muted">
           <img
             src={item.posterUrl}
             alt={item.title}

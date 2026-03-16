@@ -4,6 +4,8 @@ import { useEffect } from 'react'
 import { useFeedStore } from '@/stores/feedStore'
 import { useRealTimeUpdates } from '@/hooks/useRealTimeUpdates'
 import { MasonryGrid } from '@/components/layout/MasonryGrid'
+import { SearchBar } from '@/components/layout/SearchBar'
+import { FilterTabs } from '@/components/layout/FilterTabs'
 
 export default function Home() {
   const addItems = useFeedStore((s) => s.addItems)
@@ -31,6 +33,10 @@ export default function Home() {
 
   return (
     <div className="container mx-auto">
+      <div className="px-4 pt-5 pb-2 space-y-3">
+        <SearchBar />
+        <FilterTabs />
+      </div>
       <MasonryGrid />
     </div>
   )
