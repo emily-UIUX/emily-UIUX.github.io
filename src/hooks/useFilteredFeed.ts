@@ -25,9 +25,19 @@ function getAccountName(item: FeedItem): string {
   }
 }
 
-function matchesSubscription(item: FeedItem, channels: string[], keywords: string[]): boolean {
+interface PlatformSubs {
+  channels: string[]
+  keywords: string[]
+  regions: string[]
+  artists: string[]
+}
+
+function matchesSubscription(item: FeedItem, subs: PlatformSubs): boolean {
+  const { channels, keywords, regions, artists } = subs
+  const hasAnySub = channels.length > 0 || keywords.length > 0 || regions.length > 0 || artists.length > 0
+
   // If no subscriptions at all for this platform, show everything
-  if (channels.length === 0 && keywords.length === 0) return true
+  if (!hasAnySub) return true
 
   const accountName = getAccountName(item).toLowerCase()
   const title = item.title.toLowerCase()
@@ -46,10 +56,19 @@ function matchesSubscription(item: FeedItem, channels: string[], keywords: strin
     if (matchesKeyword) return true
   }
 
-  // Has subscriptions but nothing matched
-  if (channels.length > 0 || keywords.length > 0) return false
+  // Check region match (for exhibition items)
+  if (regions.length > 0 && item.platform === Platform.NAVER_EXHIBITION) {
+    const itemRegion = item.region.toLowerCase()
+    if (regions.some((r) => itemRegion.includes(r.toLowerCase()))) return true
+  }
 
-  return true
+  // Check artist match (for exhibition items)
+  if (artists.length > 0 && item.platform === Platform.NAVER_EXHIBITION) {
+    const itemArtist = item.artist.toLowerCase()
+    if (artists.some((a) => itemArtist.includes(a.toLowerCase()))) return true
+  }
+
+  return false
 }
 
 export function useFilteredFeed(): Record<Platform, FeedItem[]> {
@@ -65,30 +84,29 @@ export function useFilteredFeed(): Record<Platform, FeedItem[]> {
     const pastThreshold = now - PAST_THRESHOLD_DAYS * 24 * 60 * 60 * 1000
 
     // Pre-compute enabled subscriptions per platform
-    const subsByPlatform: Record<Platform, { channels: string[]; keywords: string[] }> = {
-      [Platform.YOUTUBE]: { channels: [], keywords: [] },
-      [Platform.NAVER_EXHIBITION]: { channels: [], keywords: [] },
-      [Platform.NAVER_SECURITIES]: { channels: [], keywords: [] },
-      [Platform.THREADS]: { channels: [], keywords: [] },
-      [Platform.INSTAGRAM]: { channels: [], keywords: [] },
+    const subsByPlatform: Record<Platform, PlatformSubs> = {
+      [Platform.YOUTUBE]: { channels: [], keywords: [], regions: [], artists: [] },
+      [Platform.NAVER_EXHIBITION]: { channels: [], keywords: [], regions: [], artists: [] },
+      [Platform.NAVER_SECURITIES]: { channels: [], keywords: [], regions: [], artists: [] },
+      [Platform.THREADS]: { channels: [], keywords: [], regions: [], artists: [] },
+      [Platform.INSTAGRAM]: { channels: [], keywords: [], regions: [], artists: [] },
     }
 
     for (const sub of subscriptions) {
       if (!sub.enabled) continue
-      if (sub.type === 'channel') {
-        subsByPlatform[sub.platform].channels.push(sub.value)
-      } else {
-        subsByPlatform[sub.platform].keywords.push(sub.value)
+      const bucket = subsByPlatform[sub.platform]
+      switch (sub.type) {
+        case 'channel': bucket.channels.push(sub.value); break
+        case 'keyword': bucket.keywords.push(sub.value); break
+        case 'region': bucket.regions.push(sub.value); break
+        case 'artist': bucket.artists.push(sub.value); break
       }
     }
 
     let filtered = allItems
 
-    // Subscription filter - only show items matching registered channels/keywords
-    filtered = filtered.filter((item) => {
-      const { channels, keywords } = subsByPlatform[item.platform]
-      return matchesSubscription(item, channels, keywords)
-    })
+    // Subscription filter - only show items matching registered subscriptions
+    filtered = filtered.filter((item) => matchesSubscription(item, subsByPlatform[item.platform]))
 
     // Search filter
     if (searchQuery) {
@@ -106,11 +124,14 @@ export function useFilteredFeed(): Record<Platform, FeedItem[]> {
 
       switch (activeFilter) {
         case FilterTab.NEW:
+          // 최근 1주일 이내 + 아직 상세페이지를 보지 않은 아이템
           return !isSeen && itemTime > pastThreshold
         case FilterTab.SEEN:
+          // 지금까지 상세페이지를 본 모든 아이템
           return isSeen
         case FilterTab.PAST:
-          return itemTime <= pastThreshold
+          // 1주일 이전 + 아직 상세페이지를 보지 않은 아이템
+          return !isSeen && itemTime <= pastThreshold
         default:
           return true
       }
