@@ -17,7 +17,7 @@ export function SecuritiesCard({ item }: SecuritiesCardProps) {
   const isNegative = change < 0
 
   return (
-    <Link href={`/detail/naver-securities/${item.id}`} className="group block">
+    <Link href={`/detail?platform=naver-securities&id=${item.id}`} className="group block">
       <div className="rounded-lg overflow-hidden bg-card border hover:shadow-md transition-shadow p-3">
         {/* Header with source & time */}
         <div className="flex items-center justify-between mb-2">

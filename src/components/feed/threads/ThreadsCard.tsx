@@ -12,7 +12,7 @@ interface ThreadsCardProps {
 
 export function ThreadsCard({ item }: ThreadsCardProps) {
   return (
-    <Link href={`/detail/threads/${item.id}`} className="group block">
+    <Link href={`/detail?platform=threads&id=${item.id}`} className="group block">
       <div className="relative rounded-lg overflow-hidden bg-card border hover:shadow-md transition-shadow border-l-2 border-l-neutral-300 dark:border-l-neutral-700">
         <div className="p-3">
           {/* Header */}

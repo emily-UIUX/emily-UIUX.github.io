@@ -15,13 +15,10 @@ export function useRealTimeUpdates() {
         const randomPlatform =
           PLATFORM_ORDER[Math.floor(Math.random() * PLATFORM_ORDER.length)]
 
-        const res = await fetch(
-          `/api/feed?generateNew=true&platform=${randomPlatform}`
-        )
-        if (res.ok) {
-          const newItems = await res.json()
-          addItems(newItems)
-        }
+        const { getFeedService } = await import('@/services/feedService')
+        const service = getFeedService()
+        const newItem = await service.generateNewItem(randomPlatform)
+        addItems([newItem])
       } catch (err) {
         console.error('Real-time update failed:', err)
       }

@@ -15,11 +15,10 @@ export default function Home() {
 
     async function fetchInitial() {
       try {
-        const res = await fetch('/api/feed')
-        if (res.ok) {
-          const data = await res.json()
-          addItems(data)
-        }
+        const { getFeedService } = await import('@/services/feedService')
+        const service = getFeedService()
+        const data = await service.getItems({})
+        addItems(data)
       } catch (err) {
         console.error('Failed to fetch initial feed:', err)
       }

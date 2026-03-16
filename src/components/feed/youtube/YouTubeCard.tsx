@@ -12,7 +12,7 @@ interface YouTubeCardProps {
 
 export function YouTubeCard({ item }: YouTubeCardProps) {
   return (
-    <Link href={`/detail/youtube/${item.id}`} className="group block">
+    <Link href={`/detail?platform=youtube&id=${item.id}`} className="group block">
       <div className="rounded-lg overflow-hidden bg-card border hover:shadow-md transition-shadow">
         {/* Thumbnail */}
         <div className="relative aspect-video bg-muted">

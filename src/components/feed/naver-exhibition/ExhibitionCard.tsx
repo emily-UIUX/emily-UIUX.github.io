@@ -17,7 +17,7 @@ export function ExhibitionCard({ item }: ExhibitionCardProps) {
   const startDate = new Date(item.startDate)
 
   return (
-    <Link href={`/detail/naver-exhibition/${item.id}`} className="group block">
+    <Link href={`/detail?platform=naver-exhibition&id=${item.id}`} className="group block">
       <div className="rounded-lg overflow-hidden bg-card border hover:shadow-md transition-shadow">
         {/* Poster */}
         <div className="relative aspect-[2/3] bg-muted">

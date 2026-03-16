@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { useFeedStore } from '@/stores/feedStore'
 import { Platform } from '@/types/common'
 import { FeedItem } from '@/types/feed'
@@ -11,9 +11,10 @@ import { ThreadsDetail } from '@/components/feed/threads/ThreadsDetail'
 import { ExhibitionDetail } from '@/components/feed/naver-exhibition/ExhibitionDetail'
 import { SecuritiesDetail } from '@/components/feed/naver-securities/SecuritiesDetail'
 import { ArrowLeft, Loader2 } from 'lucide-react'
+import { Suspense } from 'react'
 
-export default function DetailPage() {
-  const params = useParams<{ platform: string; id: string }>()
+function DetailContent() {
+  const searchParams = useSearchParams()
   const router = useRouter()
   const markSeen = useFeedStore((s) => s.markSeen)
   const storeItems = useFeedStore((s) => s.items)
@@ -21,9 +22,14 @@ export default function DetailPage() {
   const [item, setItem] = useState<FeedItem | null>(null)
   const [loading, setLoading] = useState(true)
 
+  const platform = searchParams.get('platform') || ''
+  const id = searchParams.get('id') || ''
+
   useEffect(() => {
-    const id = params.id
-    const platform = params.platform
+    if (!platform || !id) {
+      setLoading(false)
+      return
+    }
 
     // Try store first
     const storeItem = storeItems[id]
@@ -34,12 +40,13 @@ export default function DetailPage() {
       return
     }
 
-    // Fetch from API
+    // Fetch from service directly
     async function fetchItem() {
       try {
-        const res = await fetch(`/api/feed/${platform}/${id}`)
-        if (res.ok) {
-          const data = await res.json()
+        const { getFeedService } = await import('@/services/feedService')
+        const service = getFeedService()
+        const data = await service.getItemById(platform as Platform, id)
+        if (data) {
           setItem(data)
           addItems([data])
           markSeen(id)
@@ -51,7 +58,7 @@ export default function DetailPage() {
       }
     }
     fetchItem()
-  }, [params.id, params.platform, storeItems, markSeen, addItems])
+  }, [id, platform, storeItems, markSeen, addItems])
 
   if (loading) {
     return (
@@ -88,5 +95,17 @@ export default function DetailPage() {
       {item.platform === Platform.NAVER_EXHIBITION && <ExhibitionDetail item={item} />}
       {item.platform === Platform.NAVER_SECURITIES && <SecuritiesDetail item={item} />}
     </div>
+  )
+}
+
+export default function DetailPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    }>
+      <DetailContent />
+    </Suspense>
   )
 }

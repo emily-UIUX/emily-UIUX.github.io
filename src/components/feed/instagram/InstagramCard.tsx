@@ -12,7 +12,7 @@ interface InstagramCardProps {
 
 export function InstagramCard({ item }: InstagramCardProps) {
   return (
-    <Link href={`/detail/instagram/${item.id}`} className="group block">
+    <Link href={`/detail?platform=instagram&id=${item.id}`} className="group block">
       <div className="rounded-lg overflow-hidden bg-card border hover:shadow-md transition-shadow">
         {/* Header */}
         <div className="flex items-center gap-2 p-2.5">

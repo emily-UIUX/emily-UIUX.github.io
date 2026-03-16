@@ -1,6 +1,5 @@
 'use client'
 
-import Link from 'next/link'
 import { Board } from '@/types/bookmark'
 import { useFeedStore } from '@/stores/feedStore'
 import { useBookmarkStore } from '@/stores/bookmarkStore'
@@ -22,7 +21,7 @@ export function BoardCard({ board }: BoardCardProps) {
 
   return (
     <div className="group relative">
-      <Link href={`/bookmarks/${board.id}`}>
+      <div className="cursor-pointer">
         <div className="rounded-xl border overflow-hidden bg-card hover:shadow-md transition-shadow">
           {/* Cover grid */}
           <div className="aspect-square bg-muted grid grid-cols-2 grid-rows-2 gap-0.5 overflow-hidden">
@@ -63,7 +62,7 @@ export function BoardCard({ board }: BoardCardProps) {
             )}
           </div>
         </div>
-      </Link>
+      </div>
 
       {/* Delete button */}
       <button

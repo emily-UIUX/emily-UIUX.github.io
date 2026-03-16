@@ -31,7 +31,7 @@ export function BookmarkGallery({ items, boardId }: BookmarkGalleryProps) {
         const config = platformConfigs[item.platform]
         return (
           <div key={item.id} className="group relative">
-            <Link href={`/detail/${item.platform}/${item.id}`}>
+            <Link href={`/detail?platform=${item.platform}&id=${item.id}`}>
               <div className="rounded-xl overflow-hidden border bg-card hover:shadow-md transition-shadow">
                 <div className="aspect-square bg-muted relative">
                   <img
