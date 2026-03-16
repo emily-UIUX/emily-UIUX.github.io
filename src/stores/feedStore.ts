@@ -4,15 +4,20 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { FeedItem } from '@/types/feed'
 
+// Bump this version whenever mock data structure changes to force a refresh
+export const FEED_DATA_VERSION = 2
+
 interface FeedState {
   items: Record<string, FeedItem>
   seenIds: string[]
   lastFetchTimestamp: string
+  dataVersion: number
 
   addItems: (items: FeedItem[]) => void
   markSeen: (id: string) => void
   markAllSeen: (ids: string[]) => void
   setLastFetchTimestamp: (ts: string) => void
+  clearItems: () => void
 }
 
 export const useFeedStore = create<FeedState>()(
@@ -21,6 +26,7 @@ export const useFeedStore = create<FeedState>()(
       items: {},
       seenIds: [],
       lastFetchTimestamp: new Date().toISOString(),
+      dataVersion: 0,
 
       addItems: (newItems) =>
         set((state) => {
@@ -28,7 +34,7 @@ export const useFeedStore = create<FeedState>()(
           for (const item of newItems) {
             updated[item.id] = item
           }
-          return { items: updated }
+          return { items: updated, dataVersion: FEED_DATA_VERSION }
         }),
 
       markSeen: (id) =>
@@ -46,12 +52,16 @@ export const useFeedStore = create<FeedState>()(
 
       setLastFetchTimestamp: (ts) =>
         set({ lastFetchTimestamp: ts }),
+
+      clearItems: () =>
+        set({ items: {}, dataVersion: 0 }),
     }),
     {
       name: 'feed-seen-state',
       partialize: (state) => ({
         seenIds: state.seenIds,
         lastFetchTimestamp: state.lastFetchTimestamp,
+        dataVersion: state.dataVersion,
       }),
     }
   )

@@ -91,7 +91,7 @@ export function ExhibitionDetail({ item }: { item: NaverExhibitionItem }) {
             className="inline-flex items-center gap-1.5 mt-4 text-sm text-primary hover:underline"
           >
             <ExternalLink className="h-4 w-4" />
-            오픈갤러리에서 보기
+            {item.venue} 웹사이트 방문
           </a>
         </div>
       </div>

@@ -11,6 +11,7 @@ const exhibitions = [
     artist: '김환기',
     region: '서울',
     poster: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=400&h=300&fit=crop',
+    siteUrl: 'https://www.whankimuseum.org/',
   },
   {
     title: '이우환: 관계항 - 침묵과 여백',
@@ -21,6 +22,7 @@ const exhibitions = [
     artist: '이우환',
     region: '서울',
     poster: 'https://images.unsplash.com/photo-1544967082-d9d25d867d66?w=400&h=300&fit=crop',
+    siteUrl: 'https://www.leeum.org/',
   },
   {
     title: '박서보: 묘법의 세계',
@@ -31,6 +33,7 @@ const exhibitions = [
     artist: '박서보',
     region: '서울',
     poster: 'https://images.unsplash.com/photo-1577720643272-265f09367456?w=400&h=300&fit=crop',
+    siteUrl: 'https://www.kukjegallery.com/',
   },
   {
     title: '쿠사마 야요이: 무한 거울방',
@@ -41,6 +44,7 @@ const exhibitions = [
     artist: '쿠사마 야요이',
     region: '서울',
     poster: 'https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=400&h=300&fit=crop',
+    siteUrl: 'https://apma.amorepacific.com/',
   },
   {
     title: '데이비드 호크니: 봄의 도래',
@@ -51,6 +55,7 @@ const exhibitions = [
     artist: '데이비드 호크니',
     region: '부산',
     poster: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=400&h=300&fit=crop',
+    siteUrl: 'https://art.busan.go.kr/busanmoa/',
   },
   {
     title: '천경자: 꽃과 여인',
@@ -61,6 +66,7 @@ const exhibitions = [
     artist: '천경자',
     region: '대구',
     poster: 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=400&h=300&fit=crop',
+    siteUrl: 'https://artmuseum.daegu.go.kr/',
   },
   {
     title: '장 미셸 바스키아: 그래피티의 왕',
@@ -71,6 +77,7 @@ const exhibitions = [
     artist: '장 미셸 바스키아',
     region: '서울',
     poster: 'https://images.unsplash.com/photo-1561214078-f3247647fc5e?w=400&h=300&fit=crop',
+    siteUrl: 'https://www.artsonje.org/',
   },
   {
     title: '이중섭: 소와 아이들',
@@ -81,6 +88,7 @@ const exhibitions = [
     artist: '이중섭',
     region: '제주',
     poster: 'https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=400&h=300&fit=crop',
+    siteUrl: 'https://jmoa.jeju.go.kr/',
   },
 ]
 
@@ -100,7 +108,7 @@ export function generateExhibitionItems(count: number): NaverExhibitionItem[] {
       platform: Platform.NAVER_EXHIBITION,
       title: ex.title,
       timestamp: new Date(now - Math.floor(Math.random() * 168) * 3600000).toISOString(),
-      url: 'https://www.opengallery.co.kr/exhibition/',
+      url: ex.siteUrl,
       thumbnailUrl: ex.poster,
       tags: ['전시', ex.category, ex.artist, ex.region],
       venue: ex.venue,

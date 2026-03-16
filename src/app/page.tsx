@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { useFeedStore } from '@/stores/feedStore'
+import { useFeedStore, FEED_DATA_VERSION } from '@/stores/feedStore'
 import { useRealTimeUpdates } from '@/hooks/useRealTimeUpdates'
 import { MasonryGrid } from '@/components/layout/MasonryGrid'
 import { SearchBar } from '@/components/layout/SearchBar'
@@ -10,10 +10,18 @@ import { FilterTabs } from '@/components/layout/FilterTabs'
 export default function Home() {
   const addItems = useFeedStore((s) => s.addItems)
   const items = useFeedStore((s) => s.items)
+  const dataVersion = useFeedStore((s) => s.dataVersion)
+  const clearItems = useFeedStore((s) => s.clearItems)
 
-  // Initial data fetch
   useEffect(() => {
-    if (Object.keys(items).length > 0) return
+    const needsRefresh = dataVersion !== FEED_DATA_VERSION || Object.keys(items).length === 0
+
+    if (!needsRefresh) return
+
+    // Clear stale data if version mismatch
+    if (dataVersion !== FEED_DATA_VERSION && Object.keys(items).length > 0) {
+      clearItems()
+    }
 
     async function fetchInitial() {
       try {
@@ -26,7 +34,7 @@ export default function Home() {
       }
     }
     fetchInitial()
-  }, [addItems, items])
+  }, [addItems, items, dataVersion, clearItems])
 
   // Real-time updates
   useRealTimeUpdates()
