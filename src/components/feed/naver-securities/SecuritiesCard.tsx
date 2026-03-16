@@ -11,6 +11,10 @@ interface SecuritiesCardProps {
   item: NaverSecuritiesItem
 }
 
+function formatPrice(price: number): string {
+  return price.toLocaleString('ko-KR')
+}
+
 export function SecuritiesCard({ item }: SecuritiesCardProps) {
   const change = item.priceChangePercent ?? 0
   const isPositive = change > 0
@@ -37,27 +41,44 @@ export function SecuritiesCard({ item }: SecuritiesCardProps) {
           {item.headline}
         </h3>
 
-        {/* Stock info */}
-        {item.stockName && (
-          <div className="flex items-center gap-2 mt-2 p-2 rounded bg-muted/50">
-            <div className="flex-1">
-              <p className="text-xs font-medium">{item.stockName}</p>
-              <p className="text-[11px] text-muted-foreground">{item.stockTicker}</p>
+        {/* Stock info with opening/current price */}
+        {item.stockName && item.openingPrice != null && item.currentPrice != null && (
+          <div className="mt-2 p-2 rounded bg-muted/50">
+            <div className="flex items-center justify-between mb-1.5">
+              <div>
+                <p className="text-xs font-medium">{item.stockName}</p>
+                <p className="text-[11px] text-muted-foreground">{item.stockTicker}</p>
+              </div>
+              <div className={cn(
+                'flex items-center gap-0.5 text-sm font-bold',
+                isPositive && 'text-red-500',
+                isNegative && 'text-blue-500',
+                !isPositive && !isNegative && 'text-muted-foreground'
+              )}>
+                {isPositive ? (
+                  <TrendingUp className="h-3.5 w-3.5" />
+                ) : isNegative ? (
+                  <TrendingDown className="h-3.5 w-3.5" />
+                ) : (
+                  <Minus className="h-3.5 w-3.5" />
+                )}
+                <span>{isPositive ? '+' : ''}{change.toFixed(2)}%</span>
+              </div>
             </div>
-            <div className={cn(
-              'flex items-center gap-0.5 text-sm font-bold',
-              isPositive && 'text-red-500',
-              isNegative && 'text-blue-500',
-              !isPositive && !isNegative && 'text-muted-foreground'
-            )}>
-              {isPositive ? (
-                <TrendingUp className="h-3.5 w-3.5" />
-              ) : isNegative ? (
-                <TrendingDown className="h-3.5 w-3.5" />
-              ) : (
-                <Minus className="h-3.5 w-3.5" />
-              )}
-              <span>{isPositive ? '+' : ''}{change.toFixed(2)}%</span>
+            <div className="flex items-center justify-between text-[11px]">
+              <span className="text-muted-foreground">시가 {formatPrice(item.openingPrice)}원</span>
+              <span className={cn(
+                'font-semibold',
+                isPositive && 'text-red-500',
+                isNegative && 'text-blue-500',
+              )}>
+                현재 {formatPrice(item.currentPrice)}원
+                {item.priceChange != null && (
+                  <span className="ml-1">
+                    ({isPositive ? '+' : ''}{formatPrice(item.priceChange)})
+                  </span>
+                )}
+              </span>
             </div>
           </div>
         )}

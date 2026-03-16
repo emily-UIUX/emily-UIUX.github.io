@@ -1,25 +1,68 @@
 import { Platform } from '@/types/common'
 import { YouTubeItem } from '@/types/feed'
 
-const channels = [
-  { name: '뉴진스 공식', avatar: 'https://picsum.photos/seed/yt-ch1/40/40' },
-  { name: '백종원의 요리비책', avatar: 'https://picsum.photos/seed/yt-ch2/40/40' },
-  { name: 'TEDx Talks', avatar: 'https://picsum.photos/seed/yt-ch3/40/40' },
-  { name: '서울의봄 공식', avatar: 'https://picsum.photos/seed/yt-ch4/40/40' },
-  { name: 'MKBHD', avatar: 'https://picsum.photos/seed/yt-ch5/40/40' },
-]
-
-const titles = [
-  'How I Made This Music Video | Behind The Scenes',
-  '초간단 된장찌개 레시피 | 5분 완성',
-  'The Future of AI in 2026',
-  '봄날의 서울 산책 브이로그',
-  'iPhone 18 Pro Review: Best Camera Yet?',
-  '한국 전통시장 먹방 투어',
-  'Why This Design Changed Everything',
-  '제주도 3박 4일 여행 브이로그',
-  'The Science Behind Color Theory',
-  '2026 봄 패션 트렌드 총정리',
+// Real YouTube video IDs for realistic thumbnails and working links
+const videos = [
+  {
+    videoId: 'dQw4w9WgXcQ',
+    title: 'Rick Astley - Never Gonna Give You Up',
+    channelName: 'Rick Astley',
+    duration: '3:33',
+  },
+  {
+    videoId: 'JGwWNGJdvx8',
+    title: 'Ed Sheeran - Shape of You',
+    channelName: 'Ed Sheeran',
+    duration: '4:24',
+  },
+  {
+    videoId: '9bZkp7q19f0',
+    title: 'PSY - GANGNAM STYLE',
+    channelName: 'officialpsy',
+    duration: '4:13',
+  },
+  {
+    videoId: 'kJQP7kiw5Fk',
+    title: 'Luis Fonsi - Despacito ft. Daddy Yankee',
+    channelName: 'Luis Fonsi',
+    duration: '4:42',
+  },
+  {
+    videoId: 'RgKAFK5djSk',
+    title: 'Wiz Khalifa - See You Again ft. Charlie Puth',
+    channelName: 'Wiz Khalifa',
+    duration: '3:58',
+  },
+  {
+    videoId: 'OPf0YbXqDm0',
+    title: 'Mark Ronson - Uptown Funk ft. Bruno Mars',
+    channelName: 'Mark Ronson',
+    duration: '4:30',
+  },
+  {
+    videoId: 'fJ9rUzIMcZQ',
+    title: 'Queen - Bohemian Rhapsody',
+    channelName: 'Queen Official',
+    duration: '5:55',
+  },
+  {
+    videoId: 'CevxZvSJLk8',
+    title: 'Katy Perry - Roar',
+    channelName: 'Katy Perry',
+    duration: '4:30',
+  },
+  {
+    videoId: 'YQHsXMglC9A',
+    title: 'Adele - Hello',
+    channelName: 'Adele',
+    duration: '6:07',
+  },
+  {
+    videoId: 'hT_nvWreIhg',
+    title: 'OneRepublic - Counting Stars',
+    channelName: 'OneRepublic',
+    duration: '4:44',
+  },
 ]
 
 export function generateYouTubeItems(count: number): YouTubeItem[] {
@@ -27,25 +70,23 @@ export function generateYouTubeItems(count: number): YouTubeItem[] {
   const now = Date.now()
 
   for (let i = 0; i < count; i++) {
-    const channel = channels[i % channels.length]
+    const video = videos[i % videos.length]
     const hoursAgo = Math.floor(Math.random() * 168)
     const timestamp = new Date(now - hoursAgo * 3600000).toISOString()
-    const minutes = Math.floor(Math.random() * 30) + 1
-    const seconds = Math.floor(Math.random() * 60)
 
     items.push({
       id: `yt-${i}-${Date.now()}`,
       platform: Platform.YOUTUBE,
-      title: titles[i % titles.length],
+      title: video.title,
       timestamp,
-      url: `https://youtube.com/watch?v=mock${i}`,
-      thumbnailUrl: `https://picsum.photos/seed/yt-${i}/640/360`,
-      tags: ['영상', channel.name],
-      channelName: channel.name,
-      channelAvatarUrl: channel.avatar,
+      url: `https://www.youtube.com/watch?v=${video.videoId}`,
+      thumbnailUrl: `https://img.youtube.com/vi/${video.videoId}/hqdefault.jpg`,
+      tags: ['영상', video.channelName],
+      channelName: video.channelName,
+      channelAvatarUrl: `https://img.youtube.com/vi/${video.videoId}/default.jpg`,
       viewCount: Math.floor(Math.random() * 1000000) + 1000,
-      duration: `${minutes}:${seconds.toString().padStart(2, '0')}`,
-      description: `${titles[i % titles.length]}에 대한 설명입니다. 좋아요와 구독 부탁드립니다!`,
+      duration: video.duration,
+      description: `${video.title} - ${video.channelName}`,
       likeCount: Math.floor(Math.random() * 50000) + 100,
       commentCount: Math.floor(Math.random() * 5000) + 10,
     })

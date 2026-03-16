@@ -64,10 +64,12 @@ export interface NaverSecuritiesItem extends BaseFeedItem {
   source: string
   stockTicker?: string
   stockName?: string
+  openingPrice?: number
+  currentPrice?: number
   priceChange?: number
   priceChangePercent?: number
   summary: string
-  relatedStocks: { ticker: string; name: string; change: number }[]
+  relatedStocks: { ticker: string; name: string; openingPrice: number; currentPrice: number }[]
 }
 
 export type FeedItem =

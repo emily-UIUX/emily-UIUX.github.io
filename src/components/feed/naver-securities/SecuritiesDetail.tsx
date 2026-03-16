@@ -40,19 +40,25 @@ export function SecuritiesDetail({ item }: { item: NaverSecuritiesItem }) {
               isPositive && 'text-red-500',
               isNegative && 'text-blue-500',
             )}>
-              <div className="flex items-center gap-1 text-2xl font-bold">
+              {item.currentPrice != null && (
+                <p className="text-2xl font-bold">{item.currentPrice.toLocaleString('ko-KR')}원</p>
+              )}
+              <div className="flex items-center justify-end gap-1 text-sm font-semibold mt-0.5">
                 {isPositive ? (
-                  <TrendingUp className="h-6 w-6" />
+                  <TrendingUp className="h-4 w-4" />
                 ) : isNegative ? (
-                  <TrendingDown className="h-6 w-6" />
+                  <TrendingDown className="h-4 w-4" />
                 ) : (
-                  <Minus className="h-6 w-6" />
+                  <Minus className="h-4 w-4" />
                 )}
-                <span>{isPositive ? '+' : ''}{change.toFixed(2)}%</span>
+                <span>
+                  {item.priceChange != null && `${isPositive ? '+' : ''}${item.priceChange.toLocaleString('ko-KR')}원`}
+                  {' '}({isPositive ? '+' : ''}{change.toFixed(2)}%)
+                </span>
               </div>
-              {item.priceChange !== undefined && (
-                <p className="text-sm mt-0.5">
-                  {isPositive ? '+' : ''}{item.priceChange.toFixed(0)}원
+              {item.openingPrice != null && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  시가 {item.openingPrice.toLocaleString('ko-KR')}원
                 </p>
               )}
             </div>
@@ -75,21 +81,28 @@ export function SecuritiesDetail({ item }: { item: NaverSecuritiesItem }) {
         <div className="mt-6">
           <h3 className="font-semibold mb-3">관련 종목</h3>
           <div className="grid grid-cols-2 gap-2">
-            {item.relatedStocks.map((stock) => (
-              <div key={stock.ticker} className="flex items-center justify-between p-3 border rounded-lg">
-                <div>
-                  <p className="text-sm font-medium">{stock.name}</p>
-                  <p className="text-xs text-muted-foreground">{stock.ticker}</p>
+            {item.relatedStocks.map((stock) => {
+              const stockChange = stock.currentPrice - stock.openingPrice
+              const stockChangePercent = (stockChange / stock.openingPrice) * 100
+              return (
+                <div key={stock.ticker} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div>
+                    <p className="text-sm font-medium">{stock.name}</p>
+                    <p className="text-xs text-muted-foreground">{stock.ticker}</p>
+                  </div>
+                  <div className={cn(
+                    'text-right',
+                    stockChange > 0 && 'text-red-500',
+                    stockChange < 0 && 'text-blue-500',
+                  )}>
+                    <p className="text-sm font-semibold">{stock.currentPrice.toLocaleString('ko-KR')}원</p>
+                    <p className="text-[11px]">
+                      {stockChange > 0 ? '+' : ''}{stockChangePercent.toFixed(2)}%
+                    </p>
+                  </div>
                 </div>
-                <span className={cn(
-                  'text-sm font-semibold',
-                  stock.change > 0 && 'text-red-500',
-                  stock.change < 0 && 'text-blue-500',
-                )}>
-                  {stock.change > 0 ? '+' : ''}{stock.change}
-                </span>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       )}
