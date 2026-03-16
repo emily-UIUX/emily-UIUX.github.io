@@ -108,7 +108,10 @@ function PlatformSection({ platform }: { platform: Platform }) {
             placeholder={`${newType === 'channel' ? typeLabels.channel : typeLabels.keyword} 입력...`}
             value={newValue}
             onChange={(e) => setNewValue(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
+            onKeyDown={(e) => {
+              if (e.nativeEvent.isComposing) return
+              if (e.key === 'Enter') handleAdd()
+            }}
             className="flex-1"
           />
           <Button onClick={handleAdd} size="sm" disabled={!newValue.trim()}>

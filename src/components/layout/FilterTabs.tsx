@@ -11,7 +11,7 @@ export function FilterTabs() {
   const tabs = Object.values(FilterTab)
 
   return (
-    <div className="flex gap-1 rounded-lg bg-muted p-1">
+    <div className="flex gap-1 rounded-lg bg-muted p-1 shrink-0">
       {tabs.map((tab) => (
         <button
           key={tab}
