@@ -11,10 +11,10 @@ export const platformConfigs: Record<Platform, PlatformConfig> = {
   },
   [Platform.NAVER_EXHIBITION]: {
     id: Platform.NAVER_EXHIBITION,
-    label: 'Naver Exhibition',
-    labelKo: '네이버 전시',
-    color: '#03C75A',
-    bgColor: '#D1FAE5',
+    label: 'OpenGallery',
+    labelKo: '오픈갤러리',
+    color: '#1a1a1a',
+    bgColor: '#F3F4F6',
     icon: 'palette',
   },
   [Platform.NAVER_SECURITIES]: {

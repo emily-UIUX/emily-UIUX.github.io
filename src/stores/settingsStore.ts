@@ -8,7 +8,7 @@ import { generateId } from '@/lib/utils'
 export interface SubscriptionItem {
   id: string
   platform: Platform
-  type: 'channel' | 'keyword'
+  type: 'channel' | 'keyword' | 'region' | 'artist'
   value: string
   label: string
   enabled: boolean
@@ -18,11 +18,11 @@ export interface SubscriptionItem {
 interface SettingsState {
   subscriptions: SubscriptionItem[]
 
-  addSubscription: (platform: Platform, type: 'channel' | 'keyword', value: string, label?: string) => void
+  addSubscription: (platform: Platform, type: 'channel' | 'keyword' | 'region' | 'artist', value: string, label?: string) => void
   removeSubscription: (id: string) => void
   toggleSubscription: (id: string) => void
   getSubscriptions: (platform: Platform) => SubscriptionItem[]
-  getEnabledValues: (platform: Platform) => { channels: string[]; keywords: string[] }
+  getEnabledValues: (platform: Platform) => { channels: string[]; keywords: string[]; regions: string[]; artists: string[] }
   hasAnySubscriptions: (platform: Platform) => boolean
 }
 
@@ -31,9 +31,11 @@ const DEFAULT_SUBSCRIPTIONS: Omit<SubscriptionItem, 'id' | 'createdAt'>[] = [
   { platform: Platform.YOUTUBE, type: 'channel', value: '뉴진스 공식', label: '뉴진스 공식', enabled: true },
   { platform: Platform.YOUTUBE, type: 'channel', value: '백종원의 요리비책', label: '백종원의 요리비책', enabled: true },
   { platform: Platform.YOUTUBE, type: 'channel', value: 'MKBHD', label: 'MKBHD', enabled: true },
-  // Naver Exhibition
-  { platform: Platform.NAVER_EXHIBITION, type: 'keyword', value: '미술', label: '미술', enabled: true },
-  { platform: Platform.NAVER_EXHIBITION, type: 'keyword', value: '사진', label: '사진', enabled: true },
+  // OpenGallery Exhibition
+  { platform: Platform.NAVER_EXHIBITION, type: 'region', value: '서울', label: '서울', enabled: true },
+  { platform: Platform.NAVER_EXHIBITION, type: 'region', value: '부산', label: '부산', enabled: true },
+  { platform: Platform.NAVER_EXHIBITION, type: 'artist', value: '김환기', label: '김환기', enabled: true },
+  { platform: Platform.NAVER_EXHIBITION, type: 'artist', value: '이우환', label: '이우환', enabled: true },
   // Naver Securities
   { platform: Platform.NAVER_SECURITIES, type: 'keyword', value: '삼성전자', label: '삼성전자', enabled: true },
   { platform: Platform.NAVER_SECURITIES, type: 'keyword', value: 'AI', label: 'AI', enabled: true },
@@ -98,6 +100,8 @@ export const useSettingsStore = create<SettingsState>()(
         return {
           channels: subs.filter((s) => s.type === 'channel').map((s) => s.value),
           keywords: subs.filter((s) => s.type === 'keyword').map((s) => s.value),
+          regions: subs.filter((s) => s.type === 'region').map((s) => s.value),
+          artists: subs.filter((s) => s.type === 'artist').map((s) => s.value),
         }
       },
 

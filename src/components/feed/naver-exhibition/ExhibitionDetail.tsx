@@ -3,7 +3,7 @@
 import { NaverExhibitionItem } from '@/types/feed'
 import { BookmarkButton } from '@/components/bookmarks/BookmarkButton'
 import { Badge } from '@/components/ui/badge'
-import { MapPin, Calendar, Tag, Clock, ExternalLink } from 'lucide-react'
+import { MapPin, Calendar, Tag, Clock, ExternalLink, Paintbrush } from 'lucide-react'
 
 export function ExhibitionDetail({ item }: { item: NaverExhibitionItem }) {
   const now = new Date()
@@ -37,6 +37,11 @@ export function ExhibitionDetail({ item }: { item: NaverExhibitionItem }) {
           </div>
 
           <div className="mt-4 space-y-3">
+            <div className="flex items-center gap-2 text-sm">
+              <Paintbrush className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+              <span className="font-medium">{item.artist}</span>
+            </div>
+
             <div className="flex items-center gap-2 text-sm">
               <MapPin className="h-4 w-4 text-muted-foreground flex-shrink-0" />
               <div>
@@ -83,10 +88,10 @@ export function ExhibitionDetail({ item }: { item: NaverExhibitionItem }) {
             href={item.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 mt-4 text-sm text-green-600 hover:underline"
+            className="inline-flex items-center gap-1.5 mt-4 text-sm text-primary hover:underline"
           >
             <ExternalLink className="h-4 w-4" />
-            네이버에서 보기
+            오픈갤러리에서 보기
           </a>
         </div>
       </div>

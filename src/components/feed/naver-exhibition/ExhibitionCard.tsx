@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { NaverExhibitionItem } from '@/types/feed'
 import { BookmarkButton } from '@/components/bookmarks/BookmarkButton'
-import { MapPin, Calendar, Tag } from 'lucide-react'
+import { MapPin, Calendar, Paintbrush } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 
 interface ExhibitionCardProps {
@@ -39,9 +39,14 @@ export function ExhibitionCard({ item }: ExhibitionCardProps) {
 
         {/* Info */}
         <div className="p-2.5 space-y-1.5">
-          <h3 className="text-sm font-semibold line-clamp-2 group-hover:text-green-600">
+          <h3 className="text-sm font-semibold line-clamp-2 group-hover:text-primary">
             {item.title}
           </h3>
+
+          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+            <Paintbrush className="h-3 w-3 flex-shrink-0" />
+            <span className="truncate">{item.artist}</span>
+          </div>
 
           <div className="flex items-center gap-1 text-xs text-muted-foreground">
             <MapPin className="h-3 w-3 flex-shrink-0" />
@@ -55,11 +60,6 @@ export function ExhibitionCard({ item }: ExhibitionCardProps) {
               {' ~ '}
               {endDate.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })}
             </span>
-          </div>
-
-          <div className="flex items-center gap-1 text-xs">
-            <Tag className="h-3 w-3 text-muted-foreground" />
-            <span className="font-medium">{item.price}</span>
           </div>
         </div>
       </div>

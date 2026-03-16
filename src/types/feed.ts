@@ -54,6 +54,8 @@ export interface NaverExhibitionItem extends BaseFeedItem {
   category: string
   description: string
   posterUrl: string
+  artist: string
+  region: string
 }
 
 export interface NaverSecuritiesItem extends BaseFeedItem {

@@ -20,6 +20,8 @@ import {
   Camera,
   User,
   Hash,
+  MapPin,
+  Paintbrush,
   ToggleLeft,
   ToggleRight,
 } from 'lucide-react'
@@ -32,17 +34,48 @@ const platformIcons: Record<Platform, React.ReactNode> = {
   [Platform.INSTAGRAM]: <Camera className="h-5 w-5" />,
 }
 
-const platformTypeLabels: Record<Platform, { channel: string; keyword: string }> = {
-  [Platform.YOUTUBE]: { channel: '채널명', keyword: '키워드' },
-  [Platform.NAVER_EXHIBITION]: { channel: '주최자', keyword: '키워드' },
-  [Platform.NAVER_SECURITIES]: { channel: '종목명', keyword: '키워드' },
-  [Platform.THREADS]: { channel: '계정', keyword: '키워드' },
-  [Platform.INSTAGRAM]: { channel: '계정', keyword: '키워드' },
+type SubscriptionType = 'channel' | 'keyword' | 'region' | 'artist'
+
+interface TypeConfig {
+  types: { key: SubscriptionType; label: string; icon: React.ReactNode }[]
+}
+
+const platformTypeConfigs: Record<Platform, TypeConfig> = {
+  [Platform.YOUTUBE]: {
+    types: [
+      { key: 'channel', label: '채널명', icon: <User className="h-3 w-3" /> },
+      { key: 'keyword', label: '키워드', icon: <Hash className="h-3 w-3" /> },
+    ],
+  },
+  [Platform.NAVER_EXHIBITION]: {
+    types: [
+      { key: 'region', label: '지역', icon: <MapPin className="h-3 w-3" /> },
+      { key: 'artist', label: '작가', icon: <Paintbrush className="h-3 w-3" /> },
+    ],
+  },
+  [Platform.NAVER_SECURITIES]: {
+    types: [
+      { key: 'channel', label: '종목명', icon: <User className="h-3 w-3" /> },
+      { key: 'keyword', label: '키워드', icon: <Hash className="h-3 w-3" /> },
+    ],
+  },
+  [Platform.THREADS]: {
+    types: [
+      { key: 'channel', label: '계정', icon: <User className="h-3 w-3" /> },
+      { key: 'keyword', label: '키워드', icon: <Hash className="h-3 w-3" /> },
+    ],
+  },
+  [Platform.INSTAGRAM]: {
+    types: [
+      { key: 'channel', label: '계정', icon: <User className="h-3 w-3" /> },
+      { key: 'keyword', label: '키워드', icon: <Hash className="h-3 w-3" /> },
+    ],
+  },
 }
 
 function PlatformSection({ platform }: { platform: Platform }) {
   const config = platformConfigs[platform]
-  const typeLabels = platformTypeLabels[platform]
+  const typeConfig = platformTypeConfigs[platform]
   const allSubscriptions = useSettingsStore((s) => s.subscriptions)
   const addSubscription = useSettingsStore((s) => s.addSubscription)
   const removeSubscription = useSettingsStore((s) => s.removeSubscription)
@@ -50,7 +83,7 @@ function PlatformSection({ platform }: { platform: Platform }) {
   const subscriptions = useMemo(() => allSubscriptions.filter((sub) => sub.platform === platform), [allSubscriptions, platform])
 
   const [newValue, setNewValue] = useState('')
-  const [newType, setNewType] = useState<'channel' | 'keyword'>('channel')
+  const [newType, setNewType] = useState<SubscriptionType>(typeConfig.types[0].key)
 
   const handleAdd = () => {
     if (!newValue.trim()) return
@@ -58,8 +91,7 @@ function PlatformSection({ platform }: { platform: Platform }) {
     setNewValue('')
   }
 
-  const channels = subscriptions.filter((s) => s.type === 'channel')
-  const keywords = subscriptions.filter((s) => s.type === 'keyword')
+  const currentTypeConfig = typeConfig.types.find((t) => t.key === newType)!
 
   return (
     <div className="border rounded-xl overflow-hidden">
@@ -79,33 +111,24 @@ function PlatformSection({ platform }: { platform: Platform }) {
         {/* Add new */}
         <div className="flex gap-2">
           <div className="flex rounded-md border overflow-hidden">
-            <button
-              onClick={() => setNewType('channel')}
-              className={cn(
-                'px-3 py-1.5 text-xs font-medium transition-colors flex items-center gap-1',
-                newType === 'channel'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted text-muted-foreground hover:text-foreground'
-              )}
-            >
-              <User className="h-3 w-3" />
-              {typeLabels.channel}
-            </button>
-            <button
-              onClick={() => setNewType('keyword')}
-              className={cn(
-                'px-3 py-1.5 text-xs font-medium transition-colors flex items-center gap-1',
-                newType === 'keyword'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted text-muted-foreground hover:text-foreground'
-              )}
-            >
-              <Hash className="h-3 w-3" />
-              {typeLabels.keyword}
-            </button>
+            {typeConfig.types.map((t) => (
+              <button
+                key={t.key}
+                onClick={() => setNewType(t.key)}
+                className={cn(
+                  'px-3 py-1.5 text-xs font-medium transition-colors flex items-center gap-1',
+                  newType === t.key
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted text-muted-foreground hover:text-foreground'
+                )}
+              >
+                {t.icon}
+                {t.label}
+              </button>
+            ))}
           </div>
           <Input
-            placeholder={`${newType === 'channel' ? typeLabels.channel : typeLabels.keyword} 입력...`}
+            placeholder={`${currentTypeConfig.label} 입력...`}
             value={newValue}
             onChange={(e) => setNewValue(e.target.value)}
             onKeyDown={(e) => {
@@ -120,39 +143,28 @@ function PlatformSection({ platform }: { platform: Platform }) {
           </Button>
         </div>
 
-        {/* Channels list */}
-        {channels.length > 0 && (
-          <div>
-            <h4 className="text-xs font-medium text-muted-foreground mb-2 flex items-center gap-1">
-              <User className="h-3 w-3" />
-              {typeLabels.channel}
-            </h4>
-            <div className="flex flex-wrap gap-2">
-              {channels.map((sub) => (
-                <SubscriptionChip key={sub.id} item={sub} onToggle={toggleSubscription} onRemove={removeSubscription} />
-              ))}
+        {/* Subscription lists grouped by type */}
+        {typeConfig.types.map((t) => {
+          const items = subscriptions.filter((s) => s.type === t.key)
+          if (items.length === 0) return null
+          return (
+            <div key={t.key}>
+              <h4 className="text-xs font-medium text-muted-foreground mb-2 flex items-center gap-1">
+                {t.icon}
+                {t.label}
+              </h4>
+              <div className="flex flex-wrap gap-2">
+                {items.map((sub) => (
+                  <SubscriptionChip key={sub.id} item={sub} onToggle={toggleSubscription} onRemove={removeSubscription} />
+                ))}
+              </div>
             </div>
-          </div>
-        )}
-
-        {/* Keywords list */}
-        {keywords.length > 0 && (
-          <div>
-            <h4 className="text-xs font-medium text-muted-foreground mb-2 flex items-center gap-1">
-              <Hash className="h-3 w-3" />
-              {typeLabels.keyword}
-            </h4>
-            <div className="flex flex-wrap gap-2">
-              {keywords.map((sub) => (
-                <SubscriptionChip key={sub.id} item={sub} onToggle={toggleSubscription} onRemove={removeSubscription} />
-              ))}
-            </div>
-          </div>
-        )}
+          )
+        })}
 
         {subscriptions.length === 0 && (
           <p className="text-sm text-muted-foreground text-center py-4">
-            등록된 {typeLabels.channel} 또는 {typeLabels.keyword}가 없습니다
+            등록된 항목이 없습니다
           </p>
         )}
       </div>
